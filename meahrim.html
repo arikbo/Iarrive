@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>רישום הגעה - עתידים</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; padding: 20px; max-width: 400px; margin: 0 auto; background: #f0f2f5; }
+        .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h2 { text-align: center; color: #1a73e8; margin-top: 0; }
+        input { width: 100%; padding: 12px; margin: 8px 0 16px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 14px; background: #1a73e8; color: white; border: none; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button:disabled { background: #ccc; }
+        #status { margin-top: 15px; text-align: center; font-weight: bold; font-size: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>רישום הגעה מאוחרת</h2>
+        <input type="text" id="studentName" placeholder="שם התלמיד/ה מלא" required>
+        <input type="text" id="studentClass" placeholder="כיתה (למשל י'2)" required>
+        <input type="text" id="teacherName" placeholder="שם המורה המקצועי" required>
+        <button id="submitBtn" onclick="reportArrival()">הגעתי</button>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const SCHOOL_LAT = 32.017775;
+        const SCHOOL_LNG = 34.768920;
+        const MAX_RADIUS = 100; 
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWCcaFc7KDXhM1oMLSK4gPUKunJKVz0fv_JfVYOmQqoATv8ej97AyLk9EmKLzcslrJUQ/exec'; 
+
+        function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
+            const R = 6371e3;
+            const p1 = lat1 * Math.PI/180;
+            const p2 = lat2 * Math.PI/180;
+            const dp = (lat2-lat1) * Math.PI/180;
+            const dl = (lon2-lon1) * Math.PI/180;
+            const a = Math.sin(dp/2) * Math.sin(dp/2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dl/2) * Math.sin(dl/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        function reportArrival() {
+            const name = document.getElementById('studentName').value.trim();
+            const cls = document.getElementById('studentClass').value.trim();
+            const teacher = document.getElementById('teacherName').value.trim();
+            const statusDiv = document.getElementById('status');
+            const btn = document.getElementById('submitBtn');
+
+            if (!name || !cls || !teacher) {
+                statusDiv.innerText = "נא למלא את כל השדות.";
+                statusDiv.style.color = "red";
+                return;
+            }
+
+            const today = new Date().toLocaleDateString('he-IL');
+            if (localStorage.getItem('lastReportDate') === today) {
+                statusDiv.innerText = "כבר דיווחת על הגעה היום ממכשיר זה.";
+                statusDiv.style.color = "red";
+                return;
+            }
+
+            btn.disabled = true;
+            statusDiv.innerText = "מאמת מיקום מול שערי בית הספר...";
+            statusDiv.style.color = "#666";
+
+            if (!navigator.geolocation) {
+                statusDiv.innerText = "הדפדפן שלך לא תומך בשירותי מיקום.";
+                statusDiv.style.color = "red";
+                btn.disabled = false;
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const distance = getDistanceFromLatLonInM(lat, lng, SCHOOL_LAT, SCHOOL_LNG);
+
+                    if (distance > MAX_RADIUS) {
+                        statusDiv.innerText = `אתה רחוק מדי מבית הספר (מרחק: ${Math.round(distance)} מטרים).`;
+                        statusDiv.style.color = "red";
+                        btn.disabled = false;
+                        return;
+                    }
+
+                    statusDiv.innerText = "שולח נתונים...";
+
+                    fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: name,
+                            cls: cls,
+                            teacher: teacher,
+                            coords: `${lat.toFixed(5)}, ${lng.toFixed(5)}`
+                        })
+                    }).then(() => {
+                        localStorage.setItem('lastReportDate', today);
+                        statusDiv.innerText = "הדיווח נקלט בהצלחה! יום נעים.";
+                        statusDiv.style.color = "green";
+                    }).catch(() => {
+                        statusDiv.innerText = "שגיאה בשליחת הנתונים. נסה שוב.";
+                        statusDiv.style.color = "red";
+                        btn.disabled = false;
+                    });
+                },
+                () => {
+                    statusDiv.innerText = "לא הצלחנו לקבל מיקום. אנא אשר גישה ל-GPS.";
+                    statusDiv.style.color = "red";
+                    btn.disabled = false;
+                },
+                { enableHighAccuracy: true }
+            );
+        }
+    </script>
+</body>
+</html>

@@ -135,4 +135,71 @@
             }
 
             btn.disabled = true;
-            btn.innerText = "בודק מיקום... 📍
+            btn.innerText = "בודק מיקום... 📍";
+            statusDiv.innerText = "מוודא שאת/ה נמצא/ת בשערי בית הספר...";
+            statusDiv.style.color = "#4a5568";
+            statusDiv.style.background = "transparent";
+
+            if (!navigator.geolocation) {
+                statusDiv.innerText = "הדפדפן שלך לא תומך בשירותי מיקום 😕";
+                statusDiv.style.color = "#e53e3e";
+                statusDiv.style.background = "#fff5f5";
+                btn.disabled = false;
+                btn.innerText = "הגעתי";
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const distance = getDistanceFromLatLonInM(lat, lng, SCHOOL_LAT, SCHOOL_LNG);
+
+                    if (distance > MAX_RADIUS) {
+                        statusDiv.innerText = `את/ה רחוק/ה מדי מבית הספר (מרחק: ${Math.round(distance)} מטרים). אי אפשר לדווח מרחוק 🛑`;
+                        statusDiv.style.color = "#e53e3e";
+                        statusDiv.style.background = "#fff5f5";
+                        btn.disabled = false;
+                        btn.innerText = "הגעתי";
+                        return;
+                    }
+
+                    statusDiv.innerText = "שולח נתונים, רק רגע... ⏳";
+
+                    fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: name,
+                            cls: cls,
+                            teacher: teacher,
+                            coords: `${lat.toFixed(5)}, ${lng.toFixed(5)}`
+                        })
+                    }).then(() => {
+                        localStorage.setItem('lastReportDate', today);
+                        statusDiv.innerText = "הדיווח נקלט בהצלחה! יום לימודים פורה 🍏";
+                        statusDiv.style.color = "#38a169";
+                        statusDiv.style.background = "#f0fff4";
+                        btn.innerText = "נרשמת בהצלחה ✔️";
+                    }).catch(() => {
+                        statusDiv.innerText = "אוי, הייתה שגיאה בשליחת הנתונים. נסה/י שוב 🔄";
+                        statusDiv.style.color = "#e53e3e";
+                        statusDiv.style.background = "#fff5f5";
+                        btn.disabled = false;
+                        btn.innerText = "הגעתי";
+                    });
+                },
+                () => {
+                    statusDiv.innerText = "לא הצלחנו לקבל מיקום. אנא אשר/י גישה ל-GPS בהגדרות 📱";
+                    statusDiv.style.color = "#e53e3e";
+                    statusDiv.style.background = "#fff5f5";
+                    btn.disabled = false;
+                    btn.innerText = "הגעתי";
+                },
+                { enableHighAccuracy: true }
+            );
+        }
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>רישום הגעה - עתידים</title>
+    <title>הגעה מוקדמת - עתידים</title>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         body { 
@@ -26,9 +26,21 @@
             max-width: 360px;
             text-align: center;
         }
-        .icon-header { font-size: 50px; margin-bottom: 10px; line-height: 1; }
-        h2 { color: #2d3748; margin-top: 0; font-weight: 800; font-size: 26px; margin-bottom: 5px; }
-        p.subtitle { color: #718096; font-size: 15px; margin-bottom: 25px; margin-top: 0; font-weight: 600; }
+        .school-logo {
+            width: 140px;
+            height: auto;
+            margin: 0 auto 15px auto;
+            display: block;
+        }
+        h2 { color: #2d3748; margin-top: 0; font-weight: 800; font-size: 26px; margin-bottom: 10px; }
+        p.subtitle { 
+            color: #4a5568; 
+            font-size: 15px; 
+            margin-bottom: 25px; 
+            margin-top: 0; 
+            font-weight: 600;
+            line-height: 1.6;
+        }
         .input-group { text-align: right; margin-bottom: 16px; }
         label { display: block; font-size: 14px; font-weight: 600; color: #4a5568; margin-bottom: 6px; padding-right: 4px; }
         input { 
@@ -37,6 +49,7 @@
             background: #f8fafc; transition: all 0.3s ease;
         }
         input:focus { outline: none; border-color: #667eea; background: white; box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15); }
+        input::placeholder { color: #a0aec0; }
         button.primary-btn { 
             width: 100%; padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white; border: none; border-radius: 14px; font-size: 19px; font-weight: 800; 
@@ -44,27 +57,24 @@
             font-family: 'Heebo', sans-serif; box-shadow: 0 6px 20px rgba(118, 75, 162, 0.3);
         }
         button.primary-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(118, 75, 162, 0.4); }
+        button.primary-btn:active { transform: translateY(1px); }
         button.primary-btn:disabled { background: #cbd5e0; box-shadow: none; transform: none; cursor: not-allowed; }
-        
-        button.admin-btn {
-            width: 100%; padding: 12px; background: #edf2f7; color: #4a5568; border: 2px dashed #cbd5e0;
-            border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 20px;
-            font-family: 'Heebo', sans-serif; transition: 0.2s;
-        }
-        button.admin-btn:hover { background: #e2e8f0; }
-        
-        #status, #adminCoords { 
+        #status { 
             margin-top: 20px; font-weight: 600; font-size: 15px; min-height: 24px;
             padding: 10px; border-radius: 10px; transition: all 0.3s ease;
         }
-        #adminCoords { background: #ebf8ff; color: #2b6cb0; display: none; font-size: 17px; direction: ltr; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="icon-header">🏫</div>
-        <h2>רישום בוקר - עתידים</h2>
-        <p class="subtitle">אפליקציית נוכחות לתלמידי ז'-ט'</p>
+        <img src="image_2.png" alt="סמל ממשפחת עתידים" class="school-logo">
+        <h2>רישום הגעה מוקדמת</h2>
+        <p class="subtitle">
+            תלמידים יקרים- התבקשתם להגיע מוקדם.<br>
+            מלאו את שמכם המלא, הכיתה והמורה שהזמין אתכם מוקדם.<br>
+            לחצו על "הגעתי" וזהו.<br>
+            יום נעים ☀️
+        </p>
         
         <div class="input-group">
             <label>איך קוראים לך?</label>
@@ -73,25 +83,22 @@
 
         <div class="input-group">
             <label>באיזו כיתה את/ה?</label>
-            <input type="text" id="studentClass" placeholder="למשל: ז'3, ח'1, ט'4" required>
+            <input type="text" id="studentClass" placeholder="למשל: ז'5, ח'1, ט'4" required>
         </div>
 
         <div class="input-group">
-            <label>לאיזה מורה איחרת?</label>
-            <input type="text" id="teacherName" placeholder="שם המורה המקצועי/מחנך" required>
+            <label>מי המורה שהזמין אותך?</label>
+            <input type="text" id="teacherName" placeholder="שם המורה שהזמין/ה אותך מוקדם" required>
         </div>
 
-        <button class="primary-btn" id="submitBtn" onclick="reportArrival()">הגעתי, אפשר להיכנס!</button>
+        <button class="primary-btn" id="submitBtn" onclick="reportArrival()">הגעתי</button>
         <div id="status"></div>
-        
-        <button class="admin-btn" onclick="checkAdminCoords()">📍 כפתור זמני למנהל: דגום קואורדינטות</button>
-        <div id="adminCoords"></div>
     </div>
 
     <script>
-        const SCHOOL_LAT = 32.017775;
-        const SCHOOL_LNG = 34.768920;
-        const MAX_RADIUS = 100; 
+        const SCHOOL_LAT = 32.017842;
+        const SCHOOL_LNG = 34.768954;
+        const MAX_RADIUS = 50; 
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWCcaFc7KDXhM1oMLSK4gPUKunJKVz0fv_JfVYOmQqoATv8ej97AyLk9EmKLzcslrJUQ/exec'; 
 
         function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
@@ -103,31 +110,6 @@
             const a = Math.sin(dp/2) * Math.sin(dp/2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dl/2) * Math.sin(dl/2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
             return R * c;
-        }
-
-        // פונקציית כיול חדשה למנהל
-        function checkAdminCoords() {
-            const adminDiv = document.getElementById('adminCoords');
-            adminDiv.style.display = 'block';
-            adminDiv.innerHTML = "מחפש לוויינים... 🛰️";
-            
-            if (!navigator.geolocation) {
-                adminDiv.innerHTML = "הדפדפן לא תומך ב-GPS.";
-                return;
-            }
-
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    const accuracy = position.coords.accuracy;
-                    adminDiv.innerHTML = `<strong>${lat}, ${lng}</strong><br><span style="font-size:13px; color:#4a5568;">דיוק: ${Math.round(accuracy)} מטרים</span>`;
-                },
-                (error) => {
-                    adminDiv.innerHTML = "שגיאה בגישה למיקום: " + error.message;
-                },
-                { enableHighAccuracy: true }
-            );
         }
 
         function reportArrival() {
@@ -163,7 +145,7 @@
                 statusDiv.style.color = "#e53e3e";
                 statusDiv.style.background = "#fff5f5";
                 btn.disabled = false;
-                btn.innerText = "הגעתי, אפשר להיכנס!";
+                btn.innerText = "הגעתי";
                 return;
             }
 
@@ -174,50 +156,4 @@
                     const distance = getDistanceFromLatLonInM(lat, lng, SCHOOL_LAT, SCHOOL_LNG);
 
                     if (distance > MAX_RADIUS) {
-                        statusDiv.innerText = `את/ה רחוק/ה מדי מבית הספר (מרחק: ${Math.round(distance)} מטרים). אי אפשר לדווח מרחוק 🛑`;
-                        statusDiv.style.color = "#e53e3e";
-                        statusDiv.style.background = "#fff5f5";
-                        btn.disabled = false;
-                        btn.innerText = "הגעתי, אפשר להיכנס!";
-                        return;
-                    }
-
-                    statusDiv.innerText = "שולח נתונים, רק רגע... ⏳";
-
-                    fetch(SCRIPT_URL, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            name: name,
-                            cls: cls,
-                            teacher: teacher,
-                            coords: `${lat.toFixed(5)}, ${lng.toFixed(5)}`
-                        })
-                    }).then(() => {
-                        localStorage.setItem('lastReportDate', today);
-                        statusDiv.innerText = "הדיווח נקלט בהצלחה! יום לימודים פורה וירוק 🍏";
-                        statusDiv.style.color = "#38a169";
-                        statusDiv.style.background = "#f0fff4";
-                        btn.innerText = "נרשמת בהצלחה ✔️";
-                    }).catch(() => {
-                        statusDiv.innerText = "אוי, הייתה שגיאה בשליחת הנתונים. נסה/י שוב 🔄";
-                        statusDiv.style.color = "#e53e3e";
-                        statusDiv.style.background = "#fff5f5";
-                        btn.disabled = false;
-                        btn.innerText = "הגעתי, אפשר להיכנס!";
-                    });
-                },
-                () => {
-                    statusDiv.innerText = "לא הצלחנו לקבל מיקום. אנא אשר/י גישה ל-GPS בהגדרות 📱";
-                    statusDiv.style.color = "#e53e3e";
-                    statusDiv.style.background = "#fff5f5";
-                    btn.disabled = false;
-                    btn.innerText = "הגעתי, אפשר להיכנס!";
-                },
-                { enableHighAccuracy: true }
-            );
-        }
-    </script>
-</body>
-</html>
+                        statusDiv.innerText = `את/ה רחוק/ה מדי מבית הספר

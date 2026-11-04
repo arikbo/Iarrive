@@ -67,7 +67,7 @@
 </head>
 <body>
     <div class="container">
-        <img src="image_2.png" alt="סמל ממשפחת עתידים" class="school-logo">
+        <img src="IMG_0311.png" alt="סמל ממשפחת עתידים" class="school-logo">
         <h2>רישום הגעה מוקדמת</h2>
         <p class="subtitle">
             תלמידים יקרים- התבקשתם להגיע מוקדם.<br>
@@ -135,25 +135,4 @@
             }
 
             btn.disabled = true;
-            btn.innerText = "בודק מיקום... 📍";
-            statusDiv.innerText = "מוודא שאת/ה נמצא/ת בשערי בית הספר...";
-            statusDiv.style.color = "#4a5568";
-            statusDiv.style.background = "transparent";
-
-            if (!navigator.geolocation) {
-                statusDiv.innerText = "הדפדפן שלך לא תומך בשירותי מיקום 😕";
-                statusDiv.style.color = "#e53e3e";
-                statusDiv.style.background = "#fff5f5";
-                btn.disabled = false;
-                btn.innerText = "הגעתי";
-                return;
-            }
-
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    const distance = getDistanceFromLatLonInM(lat, lng, SCHOOL_LAT, SCHOOL_LNG);
-
-                    if (distance > MAX_RADIUS) {
-                        statusDiv.innerText = `את/ה רחוק/ה מדי מבית הספר
+            btn.innerText = "בודק מיקום... 📍

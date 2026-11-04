@@ -52,48 +52,4 @@
         input::placeholder { color: #a0aec0; }
         button.primary-btn { 
             width: 100%; padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; border: none; border-radius: 14px; font-size: 19px; font-weight: 800; 
-            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; margin-top: 15px;
-            font-family: 'Heebo', sans-serif; box-shadow: 0 6px 20px rgba(118, 75, 162, 0.3);
-        }
-        button.primary-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(118, 75, 162, 0.4); }
-        button.primary-btn:active { transform: translateY(1px); }
-        button.primary-btn:disabled { background: #cbd5e0; box-shadow: none; transform: none; cursor: not-allowed; }
-        #status { 
-            margin-top: 20px; font-weight: 600; font-size: 15px; min-height: 24px;
-            padding: 10px; border-radius: 10px; transition: all 0.3s ease;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <img src="IMG_0311.png" alt="סמל ממשפחת עתידים" class="school-logo">
-        <h2>רישום הגעה מוקדמת</h2>
-        <p class="subtitle">
-            תלמידים יקרים- התבקשתם להגיע מוקדם.<br>
-            מלאו את שמכם המלא, הכיתה והמורה שהזמין אתכם מוקדם.<br>
-            לחצו על "הגעתי" וזהו.<br>
-            יום נעים ☀️
-        </p>
-        
-        <div class="input-group">
-            <label>איך קוראים לך?</label>
-            <input type="text" id="studentName" placeholder="שם פרטי ומשפחה" required>
-        </div>
-
-        <div class="input-group">
-            <label>באיזו כיתה את/ה?</label>
-            <input type="text" id="studentClass" placeholder="למשל: ז'5, ח'1, ט'4" required>
-        </div>
-
-        <div class="input-group">
-            <label>מי המורה שהזמין אותך?</label>
-            <input type="text" id="teacherName" placeholder="שם המורה שהזמין/ה אותך מוקדם" required>
-        </div>
-
-        <button class="primary-btn" id="submitBtn" onclick="reportArrival()">הגעתי</button>
-        <div id="status"></div>
-    </div>
-
-    <script>
-        const SCHOOL_LAT = 32.01
+            color: white; border: none; border-radius

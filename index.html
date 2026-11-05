@@ -6,107 +6,45 @@
     <title>הגעה מוקדמת - עתידים</title>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Heebo', sans-serif; 
-            background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
-            min-height: 100vh;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-            box-sizing: border-box;
-        }
-        .container { 
-            background: white; 
-            padding: 25px 20px; 
-            border-radius: 24px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15); 
-            width: 100%;
-            max-width: 360px;
-            text-align: center;
-        }
-        .school-logo {
-            width: 90px;
-            height: auto;
-            margin: 0 auto 10px auto;
-            display: block;
-        }
+        body { font-family: 'Heebo', sans-serif; background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%); min-height: 100vh; margin: 0; display: flex; align-items: center; justify-content: center; padding: 15px; box-sizing: border-box; }
+        .container { background: white; padding: 25px 20px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); width: 100%; max-width: 360px; text-align: center; }
+        .school-logo { width: 90px; height: auto; margin: 0 auto 10px auto; display: block; }
         h2 { color: #2d3748; margin-top: 0; font-weight: 800; font-size: 24px; margin-bottom: 5px; }
-        p.subtitle { 
-            color: #4a5568; 
-            font-size: 14px; 
-            margin-bottom: 15px; 
-            margin-top: 0; 
-            font-weight: 600;
-            line-height: 1.4;
-        }
+        p.subtitle { color: #4a5568; font-size: 14px; margin-bottom: 15px; margin-top: 0; font-weight: 600; line-height: 1.4; }
         .input-group { text-align: right; margin-bottom: 12px; }
         label { display: block; font-size: 13px; font-weight: 600; color: #4a5568; margin-bottom: 4px; padding-right: 4px; }
-        input { 
-            width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px; 
-            box-sizing: border-box; font-size: 15px; font-family: 'Heebo', sans-serif;
-            background: #f8fafc; transition: all 0.3s ease;
-        }
+        input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px; box-sizing: border-box; font-size: 15px; font-family: 'Heebo', sans-serif; background: #f8fafc; transition: all 0.3s ease; }
         input:focus { outline: none; border-color: #667eea; background: white; box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15); }
         input::placeholder { color: #a0aec0; }
-        
-        button.photo-btn {
-            width: 100%; padding: 12px; background: #edf2f7;
-            color: #4a5568; border: 2px dashed #cbd5e0; border-radius: 12px; 
-            font-size: 15px; font-weight: 700; cursor: pointer; 
-            margin-bottom: 5px; font-family: 'Heebo', sans-serif;
-            transition: all 0.3s ease;
-        }
+        button.photo-btn { width: 100%; padding: 12px; background: #edf2f7; color: #4a5568; border: 2px dashed #cbd5e0; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 5px; font-family: 'Heebo', sans-serif; transition: all 0.3s ease; }
         button.photo-btn:hover { background: #e2e8f0; border-color: #a0aec0; }
-        
-        #preview {
-            display: none; width: 70px; height: 70px; border-radius: 50%; 
-            margin: 8px auto; object-fit: cover; border: 3px solid #667eea;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        button.primary-btn { 
-            width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 800; 
-            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; margin-top: 10px;
-            font-family: 'Heebo', sans-serif; box-shadow: 0 6px 20px rgba(118, 75, 162, 0.3);
-        }
+        #preview { display: none; width: 70px; height: 70px; border-radius: 50%; margin: 8px auto; object-fit: cover; border: 3px solid #667eea; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        button.primary-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 800; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; margin-top: 10px; font-family: 'Heebo', sans-serif; box-shadow: 0 6px 20px rgba(118, 75, 162, 0.3); }
         button.primary-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(118, 75, 162, 0.4); }
         button.primary-btn:active { transform: translateY(1px); }
         button.primary-btn:disabled { background: #cbd5e0; box-shadow: none; transform: none; cursor: not-allowed; }
-        #status { 
-            margin-top: 15px; font-weight: 600; font-size: 14px; min-height: 20px;
-            padding: 8px; border-radius: 10px; transition: all 0.3s ease;
-        }
+        #status { margin-top: 15px; font-weight: 600; font-size: 14px; min-height: 20px; padding: 8px; border-radius: 10px; transition: all 0.3s ease; }
     </style>
 </head>
 <body>
     <div class="container">
-        <img src="IMG_0311.png" alt="סמל ממשפחת עתידים" class="school-logo">
+        <img src="IMG_0311.png" alt="לוגו עתידים" class="school-logo">
         <h2>רישום הגעה מוקדמת</h2>
-        <p class="subtitle">
-            תלמידים יקרים- התבקשתם להגיע מוקדם.<br>
-            מלאו את השדות, צלמו סלפי ולחצו "הגעתי".<br>
-            יום נעים ☀️
-        </p>
+        <p class="subtitle">תלמידים יקרים- התבקשתם להגיע מוקדם.<br>מלאו את השדות, צלמו סלפי ולחצו "הגעתי".<br>יום נעים ☀️</p>
         
         <div class="input-group">
             <label>איך קוראים לך?</label>
             <input type="text" id="studentName" placeholder="שם פרטי ומשפחה" required>
         </div>
-
         <div class="input-group">
             <label>באיזו כיתה את/ה?</label>
             <input type="text" id="studentClass" placeholder="למשל: ז'5, ח'1, ט'4" required>
         </div>
-
         <div class="input-group">
             <label>מי המורה שהזמין אותך?</label>
             <input type="text" id="teacherName" placeholder="שם המורה שהזמין/ה אותך מוקדם" required>
         </div>
 
-        <!-- מנגנון הצילום -->
         <input type="file" id="cameraInput" accept="image/*" capture="user" style="display: none;">
         <button type="button" class="photo-btn" id="photoBtn" onclick="document.getElementById('cameraInput').click()">📷 לחץ לצילום סלפי</button>
         <img id="preview" alt="תצוגה מקדימה">
@@ -127,6 +65,24 @@
             const btn = document.getElementById('submitBtn');
             btn.disabled = false;
             btn.innerText = "הגעתי";
+
+            // אכיפת שפה עברית בשדות
+            const nameInput = document.getElementById('studentName');
+            const classInput = document.getElementById('studentClass');
+            const teacherInput = document.getElementById('teacherName');
+
+            // מסנן לשמות: רק עברית, רווח, מקף, גרש
+            const enforceHebrewName = function(e) {
+                e.target.value = e.target.value.replace(/[^א-ת\s\-']/g, '');
+            };
+            // מסנן לכיתה: רק עברית, מספרים, רווח, גרש, מרכאות
+            const enforceHebrewClass = function(e) {
+                e.target.value = e.target.value.replace(/[^א-ת0-9\s'"]/g, '');
+            };
+
+            nameInput.addEventListener('input', enforceHebrewName);
+            teacherInput.addEventListener('input', enforceHebrewName);
+            classInput.addEventListener('input', enforceHebrewClass);
 
             const cameraInput = document.getElementById('cameraInput');
             const preview = document.getElementById('preview');
@@ -185,21 +141,20 @@
             const btn = document.getElementById('submitBtn');
 
             if (!name || !cls || !teacher) {
-                statusDiv.innerText = "היי! חסרים פרטים, נא למלא את כל השדות 📝";
+                statusDiv.innerText = "נא למלא את כל השדות";
                 statusDiv.style.color = "#e53e3e";
                 statusDiv.style.background = "#fff5f5";
                 return;
             }
 
             if (!selfieBase64) {
-                statusDiv.innerText = "חובה לצלם סלפי לפני השליחה המערכת מזהה 📸";
+                statusDiv.innerText = "חובה לצלם סלפי לפני השליחה 📸";
                 statusDiv.style.color = "#e53e3e";
                 statusDiv.style.background = "#fff5f5";
                 return;
             }
 
             const today = new Date().toLocaleDateString('he-IL');
-            
             if (localStorage.getItem('lastReportDate') === today) {
                 statusDiv.innerText = "כבר דיווחת על הגעה היום! ניפגש מחר 🌟";
                 statusDiv.style.color = "#d69e2e";
@@ -209,12 +164,12 @@
 
             btn.disabled = true;
             btn.innerText = "בודק מיקום ומעלה תמונה... 📍";
-            statusDiv.innerText = "מוודא שאת/ה נמצא/ת בשערי בית הספר...";
+            statusDiv.innerText = "מוודא שאת/ה בשערי בית הספר...";
             statusDiv.style.color = "#4a5568";
             statusDiv.style.background = "transparent";
 
             if (!navigator.geolocation) {
-                statusDiv.innerText = "הדפדפן שלך לא תומך בשירותי מיקום 😕";
+                statusDiv.innerText = "הדפדפן שלך לא תומך בשירותי מיקום";
                 statusDiv.style.color = "#e53e3e";
                 statusDiv.style.background = "#fff5f5";
                 btn.disabled = false;
@@ -229,7 +184,7 @@
                     const distance = getDistanceFromLatLonInM(lat, lng, SCHOOL_LAT, SCHOOL_LNG);
 
                     if (distance > MAX_RADIUS) {
-                        statusDiv.innerText = `את/ה רחוק/ה מדי מבית הספר (מרחק: ${Math.round(distance)} מטרים). אי אפשר לדווח מרחוק 🛑`;
+                        statusDiv.innerText = `את/ה רחוק/ה מדי מבית הספר (מרחק: ${Math.round(distance)} מטרים).`;
                         statusDiv.style.color = "#e53e3e";
                         statusDiv.style.background = "#fff5f5";
                         btn.disabled = false;
@@ -257,7 +212,7 @@
                         statusDiv.style.background = "#f0fff4";
                         btn.innerText = "נרשמת בהצלחה ✔️";
                     }).catch(() => {
-                        statusDiv.innerText = "אוי, הייתה שגיאה בשליחת הנתונים. נסה/י שוב 🔄";
+                        statusDiv.innerText = "הייתה שגיאה בשליחת הנתונים. נסה/י שוב";
                         statusDiv.style.color = "#e53e3e";
                         statusDiv.style.background = "#fff5f5";
                         btn.disabled = false;
@@ -265,7 +220,7 @@
                     });
                 },
                 () => {
-                    statusDiv.innerText = "לא הצלחנו לקבל מיקום. אנא אשר/י גישה ל-GPS בהגדרות 📱";
+                    statusDiv.innerText = "לא הצלחנו לקבל מיקום. אנא אשר/י גישה בהגדרות";
                     statusDiv.style.color = "#e53e3e";
                     statusDiv.style.background = "#fff5f5";
                     btn.disabled = false;

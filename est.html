@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>טסט - הגעה מוקדמת</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Heebo', sans-serif; background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%); min-height: 100vh; margin: 0; display: flex; align-items: center; justify-content: center; padding: 15px; box-sizing: border-box; }
+        .container { background: white; padding: 25px 20px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); width: 100%; max-width: 360px; text-align: center; }
+        .school-logo { width: 90px; height: auto; margin: 0 auto 10px auto; display: block; }
+        h2 { color: #2d3748; margin-top: 0; font-weight: 800; font-size: 24px; margin-bottom: 5px; }
+        p.subtitle { color: #4a5568; font-size: 14px; margin-bottom: 15px; margin-top: 0; font-weight: 600; line-height: 1.4; }
+        .input-group { text-align: right; margin-bottom: 12px; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #4a5568; margin-bottom: 4px; padding-right: 4px; }
+        input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px; box-sizing: border-box; font-size: 15px; font-family: 'Heebo', sans-serif; background: #f8fafc; transition: all 0.3s ease; }
+        input:focus { outline: none; border-color: #667eea; background: white; box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15); }
+        input::placeholder { color: #a0aec0; }
+        button.photo-btn { width: 100%; padding: 12px; background: #edf2f7; color: #4a5568; border: 2px dashed #cbd5e0; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 5px; font-family: 'Heebo', sans-serif; transition: all 0.3s ease; }
+        button.photo-btn:hover { background: #e2e8f0; border-color: #a0aec0; }
+        #preview { display: none; width: 70px; height: 70px; border-radius: 50%; margin: 8px auto; object-fit: cover; border: 3px solid #667eea; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        button.primary-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 800; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; margin-top: 10px; font-family: 'Heebo', sans-serif; box-shadow: 0 6px 20px rgba(118, 75, 162, 0.3); }
+        button.primary-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(118, 75, 162, 0.4); }
+        button.primary-btn:active { transform: translateY(1px); }
+        button.primary-btn:disabled { background: #cbd5e0; box-shadow: none; transform: none; cursor: not-allowed; }
+        #status { margin-top: 15px; font-weight: 600; font-size: 14px; min-height: 20px; padding: 8px; border-radius: 10px; transition: all 0.3s ease; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="IMG_0311.png" alt="לוגו עתידים" class="school-logo">
+        <h2>סביבת טסטים</h2>
+        <p class="subtitle">עמוד זה מיועד לבדיקות מהבית בלבד.<br>הגבלת המרחק מבוטלת כאן.</p>
+        
+        <div class="input-group">
+            <label>איך קוראים לך?</label>
+            <input type="text" id="studentName" placeholder="שם פרטי ומשפחה" required>
+        </div>
+        <div class="input-group">
+            <label>באיזו כיתה את/ה?</label>
+            <input type="text" id="studentClass" placeholder="למשל: ז'5, ח'1, ט'4" required>
+        </div>
+        <div class="input-group">
+            <label>מי המורה שהזמין אותך?</label>
+            <input type="text" id="teacherName" placeholder="שם המורה שהזמין/ה אותך מוקדם" required>
+        </div>
+
+        <input type="file" id="cameraInput" accept="image/*" capture="user" style="display: none;">
+        <button type="button" class="photo-btn" id="photoBtn" onclick="document.getElementById('cameraInput').click()">📷 לחץ לצילום סלפי</button>
+        <img id="preview" alt="תצוגה מקדימה">
+
+        <button class="primary-btn" id="submitBtn" onclick="reportArrival()">הגעתי (טסט)</button>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const SCHOOL_LAT = 32.017842;
+        const SCHOOL_LNG = 34.768954;
+        const MAX_RADIUS = 9999999; 
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWCcaFc7KDXhM1oMLSK4gPUKunJKVz0fv_JfVYOmQqoATv8ej97AyLk9EmKLzcslrJUQ/exec'; 
+
+        let selfieBase64 = null;
+
+        window.onload = function() {
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = false;
+            btn.innerText = "הגעתי (טסט)";
+
+            const cameraInput = document.getElementById('cameraInput');
+            const preview = document.getElementById('preview');
+            const photoBtn = document.getElementById('photoBtn');
+
+            cameraInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                photoBtn.innerText = "מעבד תמונה... ⏳";
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 600;
+                        const scaleSize = MAX_WIDTH / img.width;
+                        canvas.width = MAX_WIDTH;
+                        canvas.height = img.height * scaleSize;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        
+                        selfieBase64 = canvas.toDataURL('image/jpeg', 0.6).split(',')[1];
+                        
+                        preview.src = canvas.toDataURL('image/jpeg', 0.6);
+                        preview.style.display = 'block';
+                        photoBtn.innerText = "תמונה צולמה בהצלחה ✔️";
+                        photoBtn.style.background = "#e6fffa";
+                        photoBtn.style.borderColor = "#319795";
+                        photoBtn.style.color = "#285e61";
+                    }
+                    img.src = event.target.result;
+                }
+                reader.readAsDataURL(file);
+            });
+        };
+
+        function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
+            const R = 6371e3;
+            const p1 = lat1 * Math.PI/180;
+            const p2 = lat2 * Math.PI/180;
+            const dp = (lat2-lat1) * Math.PI/180;
+            const dl = (lon2-lon1) * Math.PI/180;
+            const a = Math.sin(dp/2) * Math.sin(dp/2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dl/2) * Math.sin(dl/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        function reportArrival() {
+            const name = document.getElementById('studentName').value.trim();
+            const cls = document.getElementById('studentClass').value.trim();
+            const teacher = document.getElementById('teacherName').value.trim();
+            const statusDiv = document.getElementById('status');
+            const btn = document.getElementById('submitBtn');
+
+            if (!name || !cls || !teacher) {
+                statusDiv.innerText = "נא למלא את כל השדות";
+                statusDiv.style.color = "#e53e3e";
+                statusDiv.style.background = "#fff5f5";
+                return;
+            }
+
+            if (!selfieBase64) {
+                statusDiv.innerText = "חובה לצלם סלפי לפני השליחה 📸";
+                statusDiv.style.color = "#e53e3e";
+                statusDiv.style.background = "#fff5f5";
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "בודק מיקום ומעלה תמונה... 📍";
+            statusDiv.innerText = "מוודא נתונים...";
+            statusDiv.style.color = "#4a5568";
+            statusDiv.style.background = "transparent";
+
+            if (!navigator.geolocation) {
+                statusDiv.innerText = "הדפדפן שלך לא תומך בשירותי מיקום";
+                statusDiv.style.color = "#e53e3e";
+                statusDiv.style.background = "#fff5f5";
+                btn.disabled = false;
+                btn.innerText = "הגעתי (טסט)";
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const distance = getDistanceFromLatLonInM(lat, lng, SCHOOL_LAT, SCHOOL_LNG);
+
+                    if (distance > MAX_RADIUS) {
+                        statusDiv.innerText = "רחוק מדי מבית הספר";
+                        statusDiv.style.color = "#e53e3e";
+                        statusDiv.style.background = "#fff5f5";
+                        btn.disabled = false;
+                        btn.innerText = "הגעתי (טסט)";
+                        return;
+                    }
+
+                    statusDiv.innerText = "שולח נתונים ותמונה לאקסל... ⏳";
+
+                    fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: name + " (בדיקה)",
+                            cls: cls,
+                            teacher: teacher,
+                            coords: `${lat.toFixed(5)}, ${lng.toFixed(5)}`,
+                            image: selfieBase64
+                        })
+                    }).then(() => {
+                        statusDiv.innerText = "הדיווח והתמונה עברו בהצלחה! 🍏";
+                        statusDiv.style.color = "#38a169";
+                        statusDiv.style.background = "#f0fff4";
+                        btn.innerText = "נרשמת בהצלחה ✔️";
+                        
+                        setTimeout(() => {
+                            btn.disabled = false;
+                            btn.innerText = "הגעתי (טסט)";
+                            statusDiv.innerText = "";
+                            statusDiv.style.background = "transparent";
+                        }, 4000);
+                        
+                    }).catch(() => {
+                        statusDiv.innerText = "הייתה שגיאה. נסה שוב";
+                        statusDiv.style.color = "#e53e3e";
+                        statusDiv.style.background = "#fff5f5";
+                        btn.disabled = false;
+                        btn.innerText = "הגעתי (טסט)";
+                    });
+                },
+                () => {
+                    statusDiv.innerText = "לא הצלחנו לקבל מיקום";
+                    statusDiv.style.color = "#e53e3e";
+                    statusDiv.style.background = "#fff5f5";
+                    btn.disabled = false;
+                    btn.innerText = "הגעתי (טסט)";
+                },
+                { enableHighAccuracy: true }
+            );
+        }
+    </script>
+</body>
+</html>

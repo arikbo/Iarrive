@@ -1,167 +1,231 @@
-const SHEET_ID = '1r7-1uG5m8nwFPoDa1z6D4Iq-ixW6A2pGOb94D4CpxEw';
-const FOLDER_ID = '1PCsvBEPgaErGBbvfUksjitl_kNziMzSG'; // תיקיית התמונות בדרייב
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>טסט - הגעה מוקדמת</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Heebo', sans-serif; background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%); min-height: 100vh; margin: 0; display: flex; align-items: center; justify-content: center; padding: 15px; box-sizing: border-box; }
+        .container { background: white; padding: 25px 20px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); width: 100%; max-width: 360px; text-align: center; }
+        .school-logo { width: 90px; height: auto; margin: 0 auto 10px auto; display: block; }
+        h2 { color: #2d3748; margin-top: 0; font-weight: 800; font-size: 24px; margin-bottom: 5px; }
+        p.subtitle { color: #4a5568; font-size: 14px; margin-bottom: 15px; margin-top: 0; font-weight: 600; line-height: 1.4; }
+        .input-group { text-align: right; margin-bottom: 12px; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #4a5568; margin-bottom: 4px; padding-right: 4px; }
+        input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px; box-sizing: border-box; font-size: 15px; font-family: 'Heebo', sans-serif; background: #f8fafc; transition: all 0.3s ease; }
+        input:focus { outline: none; border-color: #667eea; background: white; box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15); }
+        input::placeholder { color: #a0aec0; }
+        button.photo-btn { width: 100%; padding: 12px; background: #edf2f7; color: #4a5568; border: 2px dashed #cbd5e0; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 5px; font-family: 'Heebo', sans-serif; transition: all 0.3s ease; }
+        button.photo-btn:hover { background: #e2e8f0; border-color: #a0aec0; }
+        #preview { display: none; width: 70px; height: 70px; border-radius: 50%; margin: 8px auto; object-fit: cover; border: 3px solid #667eea; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        button.primary-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 800; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; margin-top: 10px; font-family: 'Heebo', sans-serif; box-shadow: 0 6px 20px rgba(118, 75, 162, 0.3); }
+        button.primary-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(118, 75, 162, 0.4); }
+        button.primary-btn:active { transform: translateY(1px); }
+        button.primary-btn:disabled { background: #cbd5e0; box-shadow: none; transform: none; cursor: not-allowed; }
+        #status { margin-top: 15px; font-weight: 600; font-size: 14px; min-height: 20px; padding: 8px; border-radius: 10px; transition: all 0.3s ease; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="IMG_0311.png" alt="לוגו עתידים" class="school-logo">
+        <h2>סביבת טסטים</h2>
+        <p class="subtitle">עמוד זה מיועד לבדיקות מהבית בלבד.<br>הגבלת המרחק מבוטלת כאן.</p>
+        
+        <div class="input-group">
+            <label>איך קוראים לך?</label>
+            <input type="text" id="studentName" placeholder="שם פרטי ומשפחה" required>
+        </div>
+        <div class="input-group">
+            <label>באיזו כיתה את/ה?</label>
+            <input type="text" id="studentClass" placeholder="למשל: ז'5, ח'1, ט'4" required>
+        </div>
+        <div class="input-group">
+            <label>מי המורה שהזמין אותך?</label>
+            <input type="text" id="teacherName" placeholder="שם המורה שהזמין/ה אותך מוקדם" required>
+        </div>
 
-function doPost(e) {
-  try {
-    const data = JSON.parse(e.postData.contents);
-    const ss = SpreadsheetApp.openById(SHEET_ID);
-    const sheet = ss.getSheets()[0]; 
-    
-    const timestamp = new Date();
-    const formattedDate = Utilities.formatDate(timestamp, "Asia/Jerusalem", "dd/MM/yyyy HH:mm:ss");
-    
-    let fileUrl = "";
-    
-    if (data.image) {
-      try {
-        const folder = DriveApp.getFolderById(FOLDER_ID);
-        const imageBlob = Utilities.newBlob(Utilities.base64Decode(data.image), 'image/jpeg', `Selfie_${data.name}_${formattedDate.replace(/[:\\/]/g, '-')}.jpg`);
-        const file = folder.createFile(imageBlob);
-        fileUrl = file.getUrl();
-      } catch (imgError) {
-        fileUrl = "שגיאה בשמירת התמונה";
-      }
-    }
-    
-    sheet.appendRow([
-      formattedDate,
-      data.name,
-      data.cls,
-      data.teacher,
-      data.coords,
-      fileUrl
-    ]);
-    
-    return ContentService.createTextOutput("Success").setMimeType(ContentService.MimeType.TEXT);
-  } catch (error) {
-    return ContentService.createTextOutput("Error: " + error.toString()).setMimeType(ContentService.MimeType.TEXT);
-  }
-}
+        <input type="file" id="cameraInput" accept="image/*" capture="user" style="display: none;">
+        <button type="button" class="photo-btn" id="photoBtn" onclick="document.getElementById('cameraInput').click()">📷 לחץ לצילום סלפי</button>
+        <img id="preview" alt="תצוגה מקדימה">
 
-function deleteOldPhotos() {
-  const folder = DriveApp.getFolderById(FOLDER_ID);
-  const files = folder.getFiles();
-  while (files.hasNext()) {
-    const file = files.next();
-    file.setTrashed(true);
-  }
-}
+        <button class="primary-btn" id="submitBtn" onclick="reportArrival()">הגעתי (טסט)</button>
+        <div id="status"></div>
+    </div>
 
-function levenshtein(a, b) {
-  const matrix = [];
-  for (let i = 0; i <= b.length; i++) { matrix[i] = [i]; }
-  for (let j = 0; j <= a.length; j++) { matrix[0][j] = j; }
-  for (let i = 1; i <= b.length; i++) {
-    for (let j = 1; j <= a.length; j++) {
-      if (b.charAt(i - 1) == a.charAt(j - 1)) {
-        matrix[i][j] = matrix[i - 1][j - 1];
-      } else {
-        matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
-      }
-    }
-  }
-  return matrix[b.length][a.length];
-}
+    <script>
+        const SCHOOL_LAT = 32.017842;
+        const SCHOOL_LNG = 34.768954;
+        const MAX_RADIUS = 9999999; 
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWCcaFc7KDXhM1oMLSK4gPUKunJKVz0fv_JfVYOmQqoATv8ej97AyLk9EmKLzcslrJUQ/exec'; 
 
-function sendDailyReports() {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  const dataSheet = ss.getSheets()[0];
-  const emailsSheet = ss.getSheetByName("מיילים");
-  
-  if (!emailsSheet) {
-    console.log("לא נמצאה לשונית בשם 'מיילים'");
-    return;
-  }
+        let selfieBase64 = null;
 
-  // השתמשנו ב-getDisplayValues כדי למנוע בעיות של פורמט תאריכים
-  const emailData = emailsSheet.getDataRange().getDisplayValues();
-  const teacherEmails = {};
-  for (let i = 1; i < emailData.length; i++) { 
-    if (emailData[i][0] && emailData[i][1]) {
-      teacherEmails[emailData[i][0].toString().trim()] = emailData[i][1].toString().trim();
-    }
-  }
+        window.onload = function() {
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = false;
+            btn.innerText = "הגעתי (טסט)";
 
-  const todayStr = Utilities.formatDate(new Date(), "Asia/Jerusalem", "dd/MM/yyyy");
-  // השתמשנו ב-getDisplayValues כדי שהתאריך ייקרא בדיוק כמו שהוא נראה
-  const records = dataSheet.getDataRange().getDisplayValues(); 
-  const todayLates = [];
-  
-  for (let i = 1; i < records.length; i++) {
-    if (records[i][0].toString().includes(todayStr)) {
-      todayLates.push(records[i]);
-    }
-  }
+            // אכיפת שפה עברית בשדות
+            const nameInput = document.getElementById('studentName');
+            const classInput = document.getElementById('studentClass');
+            const teacherInput = document.getElementById('teacherName');
 
-  if (todayLates.length === 0) {
-    console.log("לא נמצאו תלמידים להיום (" + todayStr + ")");
-    return;
-  }
+            const enforceHebrewName = function(e) {
+                e.target.value = e.target.value.replace(/[^א-ת\s\-']/g, '');
+            };
+            const enforceHebrewClass = function(e) {
+                e.target.value = e.target.value.replace(/[^א-ת0-9\s'"]/g, '');
+            };
 
-  const reportsByTeacher = {};
+            nameInput.addEventListener('input', enforceHebrewName);
+            teacherInput.addEventListener('input', enforceHebrewName);
+            classInput.addEventListener('input', enforceHebrewClass);
 
-  todayLates.forEach(row => {
-    const typedTeacherName = row[3].toString().trim();
-    let bestMatch = typedTeacherName;
-    let minDistance = 999;
-    
-    Object.keys(teacherEmails).forEach(validName => {
-      const dist = levenshtein(typedTeacherName, validName);
-      if (dist < minDistance && dist <= 3) { 
-        minDistance = dist;
-        bestMatch = validName;
-      }
-    });
+            const cameraInput = document.getElementById('cameraInput');
+            const preview = document.getElementById('preview');
+            const photoBtn = document.getElementById('photoBtn');
 
-    if (!reportsByTeacher[bestMatch]) reportsByTeacher[bestMatch] = [];
-    reportsByTeacher[bestMatch].push(row);
-  });
+            cameraInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
 
-  let emailsSent = 0;
-  Object.keys(reportsByTeacher).forEach(teacher => {
-    const email = teacherEmails[teacher];
-    if (!email) return;
+                photoBtn.innerText = "מעבד תמונה... ⏳";
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 600;
+                        const scaleSize = MAX_WIDTH / img.width;
+                        canvas.width = MAX_WIDTH;
+                        canvas.height = img.height * scaleSize;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        
+                        selfieBase64 = canvas.toDataURL('image/jpeg', 0.6).split(',')[1];
+                        
+                        preview.src = canvas.toDataURL('image/jpeg', 0.6);
+                        preview.style.display = 'block';
+                        photoBtn.innerText = "תמונה צולמה בהצלחה ✔️";
+                        photoBtn.style.background = "#e6fffa";
+                        photoBtn.style.borderColor = "#319795";
+                        photoBtn.style.color = "#285e61";
+                    }
+                    img.src = event.target.result;
+                }
+                reader.readAsDataURL(file);
+            });
+        };
 
-    let htmlBody = `<h2 dir="rtl">דוח הגעת תלמידים יומי - ${todayStr}</h2>`;
-    htmlBody += `<table dir="rtl" border="1" style="border-collapse: collapse; width: 100%; font-family: sans-serif;">`;
-    htmlBody += `<tr style="background-color: #f2f2f2;"><th>שעת הגעה</th><th>שם התלמיד</th><th>כיתה</th><th>תמונה מקורית</th></tr>`;
-    
-    reportsByTeacher[teacher].forEach(row => {
-      const timeOnly = row[0].toString().split(" ")[1] || row[0];
-      const photoLink = row[5] && row[5].toString().includes("http") ? `<a href="${row[5]}">צפה בתמונה</a>` : "אין תמונה";
-      htmlBody += `<tr><td style="padding: 8px;">${timeOnly}</td><td style="padding: 8px;">${row[1]}</td><td style="padding: 8px;">${row[2]}</td><td style="padding: 8px; text-align: center;">${photoLink}</td></tr>`;
-    });
-    
-    htmlBody += `</table>`;
+        function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
+            const R = 6371e3;
+            const p1 = lat1 * Math.PI/180;
+            const p2 = lat2 * Math.PI/180;
+            const dp = (lat2-lat1) * Math.PI/180;
+            const dl = (lon2-lon1) * Math.PI/180;
+            const a = Math.sin(dp/2) * Math.sin(dp/2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dl/2) * Math.sin(dl/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
 
-    MailApp.sendEmail({
-      to: email,
-      subject: `דוח תלמידים מאחרים - ${teacher}`,
-      htmlBody: htmlBody
-    });
-    emailsSent++;
-  });
-  
-  console.log("נשלחו " + emailsSent + " מיילים בהצלחה.");
-}
+        function reportArrival() {
+            const name = document.getElementById('studentName').value.trim();
+            const cls = document.getElementById('studentClass').value.trim();
+            const teacher = document.getElementById('teacherName').value.trim();
+            const statusDiv = document.getElementById('status');
+            const btn = document.getElementById('submitBtn');
 
-function createDailyTrigger() {
-  const triggers = ScriptApp.getProjectTriggers();
-  for (let i = 0; i < triggers.length; i++) {
-    ScriptApp.deleteTrigger(triggers[i]);
-  }
+            if (!name || !cls || !teacher) {
+                statusDiv.innerText = "נא למלא את כל השדות";
+                statusDiv.style.color = "#e53e3e";
+                statusDiv.style.background = "#fff5f5";
+                return;
+            }
 
-  ScriptApp.newTrigger('sendDailyReports')
-    .timeBased()
-    .atHour(8)
-    .nearMinute(25)
-    .everyDays(1)
-    .create();
-    
-  ScriptApp.newTrigger('deleteOldPhotos')
-    .timeBased()
-    .atHour(0)
-    .nearMinute(5)
-    .everyDays(1)
-    .create();
-}
+            if (!selfieBase64) {
+                statusDiv.innerText = "חובה לצלם סלפי לפני השליחה 📸";
+                statusDiv.style.color = "#e53e3e";
+                statusDiv.style.background = "#fff5f5";
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "בודק מיקום ומעלה תמונה... 📍";
+            statusDiv.innerText = "מוודא נתונים...";
+            statusDiv.style.color = "#4a5568";
+            statusDiv.style.background = "transparent";
+
+            if (!navigator.geolocation) {
+                statusDiv.innerText = "הדפדפן שלך לא תומך בשירותי מיקום";
+                statusDiv.style.color = "#e53e3e";
+                statusDiv.style.background = "#fff5f5";
+                btn.disabled = false;
+                btn.innerText = "הגעתי (טסט)";
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const distance = getDistanceFromLatLonInM(lat, lng, SCHOOL_LAT, SCHOOL_LNG);
+
+                    if (distance > MAX_RADIUS) {
+                        statusDiv.innerText = "רחוק מדי מבית הספר";
+                        statusDiv.style.color = "#e53e3e";
+                        statusDiv.style.background = "#fff5f5";
+                        btn.disabled = false;
+                        btn.innerText = "הגעתי (טסט)";
+                        return;
+                    }
+
+                    statusDiv.innerText = "שולח נתונים ותמונה לאקסל... ⏳";
+
+                    fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: name + " (בדיקה)",
+                            cls: cls,
+                            teacher: teacher,
+                            coords: `${lat.toFixed(5)}, ${lng.toFixed(5)}`,
+                            image: selfieBase64
+                        })
+                    }).then(() => {
+                        statusDiv.innerText = "הדיווח והתמונה עברו בהצלחה! 🍏";
+                        statusDiv.style.color = "#38a169";
+                        statusDiv.style.background = "#f0fff4";
+                        btn.innerText = "נרשמת בהצלחה ✔️";
+                        
+                        setTimeout(() => {
+                            btn.disabled = false;
+                            btn.innerText = "הגעתי (טסט)";
+                            statusDiv.innerText = "";
+                            statusDiv.style.background = "transparent";
+                        }, 4000);
+                        
+                    }).catch(() => {
+                        statusDiv.innerText = "הייתה שגיאה. נסה שוב";
+                        statusDiv.style.color = "#e53e3e";
+                        statusDiv.style.background = "#fff5f5";
+                        btn.disabled = false;
+                        btn.innerText = "הגעתי (טסט)";
+                    });
+                },
+                () => {
+                    statusDiv.innerText = "לא הצלחנו לקבל מיקום";
+                    statusDiv.style.color = "#e53e3e";
+                    statusDiv.style.background = "#fff5f5";
+                    btn.disabled = false;
+                    btn.innerText = "הגעתי (טסט)";
+                },
+                { enableHighAccuracy: true }
+            );
+        }
+    </script>
+</body>
+</html>
